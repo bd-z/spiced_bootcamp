@@ -1,0 +1,39 @@
+#  export database
+
+baodong@baodong-ThinkPad-X1-Carbon:~$ pg_dump baodong > baodong.sql
+
+#copy database to Amazon database
+
+(base) baodong@baodong-ThinkPad-X1-Carbon:~$ psql -f baodong.sql -h westwindbd.ctaxigaqvokl.us-east-2.rds.amazonaws.com -U  masterBd -d westwindbd -p 5432
+
+#connect to AWS database
+(base) baodong@baodong-ThinkPad-X1-Carbon:~$ psql -h westwindbd.ctaxigaqvokl.us-east-2.rds.amazonaws.com -U  masterBd -d westwindbd -p 5432;
+
+#  check whether get the table
+westwindbd=> \dt
+
+
+westwindbd=> select * from shippers;
+
+
+#change the mod of the key for security
+baodong@baodong-ThinkPad-X1-Carbon:~/Downloads$ chmod 400 ec2bdkey.pem
+
+#secure copy this metabse.jar which be downloaded on local before to the AWS virtual machine
+
+(base) baodong@baodong-ThinkPad-X1-Carbon:~/Downloads$  scp -i ec2bdkey.pem metabase.jar ubuntu@ec2-3-137-190-74.us-east-2.compute.amazonaws.com:.
+
+#check this virtual machine
+(base) baodong@baodong-ThinkPad-X1-Carbon:~/Downloads$ ssh -i ec2bdkey.pem ubuntu@ec2-3-137-190-74.us-east-2.compute.amazonaws.com
+
+# update this virtual machine EC2
+ubuntu@ip-172-31-4-59:~$ sudo apt-get update -y
+
+# install metabase on this EC2
+ubuntu@ip-172-31-4-59:~$ sudo apt-get install -y openjdk-11-jre-headless
+
+# run this metabase on EC2 even log off from there.
+ubuntu@ip-172-31-4-59:~$ sudo nohup java -jar -DMB_JETTY_PORT=80 metabase.jar &
+
+ubuntu@ip-172-31-4-59:~$ nohup: ignoring input and appending output to 'nohup.out'
+
